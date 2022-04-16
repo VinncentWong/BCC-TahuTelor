@@ -1,8 +1,9 @@
 package admin
 
 import (
+	"module/db"
 	"module/entities/dto/admin_dto"
-	"module/main"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,11 +15,15 @@ func SignUpHandler(c *gin.Context) {
 	if err != nil {
 		panic(err.Error())
 	}
-	db := main.GetDB()
-	result := db.Create(&bodySignup)
+	_db := db.GetDB()
+	result := _db.Create(&bodySignup)
 	if result.Error != nil {
 		panic(result.Error.Error())
 	}
+	c.JSON(http.StatusOK, gin.H{
+		"successfull": true,
+		"message":     "success add your data into database !",
+	})
 }
 
 func LoginHandler(c *gin.Context) {

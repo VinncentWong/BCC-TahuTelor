@@ -20,7 +20,3 @@ func main() {
 	controller.InitRouter(r)
 	r.Run()
 }
-
-func GetDB() *gorm.DB {
-	return anotherDB
-}
