@@ -2,7 +2,9 @@ package admin
 
 import (
 	"module/db"
+	"module/entities/admin"
 	"module/entities/dto/admin_dto"
+	"module/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,5 +29,38 @@ func SignUpHandler(c *gin.Context) {
 }
 
 func LoginHandler(c *gin.Context) {
+	var bodyLogin admin_dto.Login
 
+	err := c.BindJSON(&bodyLogin)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	_db := db.GetDB()
+	var adminLogin admin_dto.Login
+	result := _db.Where("email = ?", bodyLogin.Email).Take(&adminLogin)
+	if result.Error != nil {
+		panic(result.Error.Error())
+	}
+	var admin admin.Admin
+	result = _db.Where("email = ?", admin.Email).Take(&admin)
+	if result.Error != nil {
+		panic(result.Error.Error())
+	}
+	if bodyLogin.Password == adminLogin.Password {
+		token, err := middleware.GenerateToken(adminLogin)
+		if err != nil {
+			panic(err.Error())
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"successful": true,
+			"message":    "successfully login !!!",
+			"data": gin.H{
+				"id":    admin.ID,
+				"name":  admin.Username,
+				"email": admin.Email,
+				"token": token,
+			},
+		})
+	}
 }
