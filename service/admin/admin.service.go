@@ -23,8 +23,8 @@ func SignUpHandler(c *gin.Context) {
 		panic(result.Error.Error())
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"successfull": true,
-		"message":     "success add your data into database !",
+		"successful": true,
+		"message":    "success add your data into database !",
 	})
 }
 
@@ -61,6 +61,11 @@ func LoginHandler(c *gin.Context) {
 				"email": admin.Email,
 				"token": token,
 			},
+		})
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{
+			"successful": false,
+			"message":    "email or password wrong !",
 		})
 	}
 }
